@@ -1,6 +1,8 @@
 const express = require("express")
 const router = require("express-promise-router")()
 
-router.route("/").get((req, res) => res.send({ msg: "got here" }))
+const controllers = require("../../controllers/v1")
+
+router.route("/").get(controllers.home)
 
 module.exports = router
