@@ -2,31 +2,24 @@ const express = require("express")
 
 // External middleware
 const bodyParser = require("body-parser")
-
 const helmet = require("helmet")
-// Internal middleware
-const logger = require("./src/middleware/logger")
-const errorHandler = require("./src/middleware/error-handler")
+const morgan = require("morgan")
+
+// Internal dependencies
 const setupRoutes = require("./src/routes")
+const port = process.env.PORT || 3001
+const loggingLevel = process.env.NODE_ENV === "production" ? "combined" : "dev"
 
 const app = express()
 
+app.use(morgan(loggingLevel))
 app.use(helmet())
-app.use(logger)
 app.use(bodyParser.json())
 
 setupRoutes(app)
 
-app.use(errorHandler)
+const startServer = port =>
+  app.listen(port, () => console.log(`Listening on port ${port}`))
 
-const port = process.env.PORT || 3001
-
-function startServer(port) {
-  app.listen(port, () => console.log(`App listening on port ${port}`))
-}
-
-if (require.main === module) {
-  startServer(port)
-} else {
-  module.exports = app
-}
+if (require.main === module) startServer(port)
+else module.exports = app
